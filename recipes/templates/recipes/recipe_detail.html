@@ -1,0 +1,32 @@
+{% extends 'recipes/base.html' %}
+{% block title %}Recipe Detail{% endblock %}
+
+{% block body %}
+
+<div class="col-sm-5 col-md-6">
+
+    <h2> {{recipe.name}} </h2>
+    <h6>
+        <i class="em em-female-cook" aria-role="presentation" aria-label="female-cook"></i>
+        {{recipe.user}}&nbsp;
+        <i class="em em-muscle" aria-role="presentation" aria-label="muscle"></i>
+        {{recipe.difficulty}}&nbsp;&nbsp;
+        <i class="em em-clock1" aria-role="presentation" aria-label="clock1"></i>
+        {{ recipe.date_created|date:"F/d/Y" }}
+    </h6>
+
+    <div class="col-md-5" style="padding-left: 0"> <img src="{{ recipe.image.url }}" class="card-img-top"></div>
+    <br>
+    <h4> Ingredients </h4>
+    <ul>
+        {% for ingredient in recipe.ingredients.all %}
+            <li>{{ingredient.name}}</li>
+        {% endfor%}
+    </ul>
+    <h4> Description </h4>
+    <p>
+        {{recipe.description}}
+    </p>
+</div>
+
+{% endblock %}

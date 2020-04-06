@@ -1,0 +1,31 @@
+{% extends 'recipes/base.html' %}
+
+{% block body %}
+
+{%for recipe in object_list %}
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-7">
+            <div class="card">
+                <div class="card-header"> <h3>{{recipe.name}}</h3></div>
+                <div class="card-body">
+                    <div class="col-md-5" style="padding-left: 0"> <img src="{{ recipe.image.url }}" class="card-img-top"> </div>
+                    <br> </br>
+                    <p class="card-text">{{ recipe.description }}</p> 
+                    <p class="card-text">
+                        <h6 class="text-muted"> {{ recipe.date_created|date:"F/d/Y" }} , by {{ recipe.user }} </h6>
+                    </p>
+                    <a href="{% url 'recipes:detail' recipe.id %}" class="stretched-link">More...</a>
+                </div>
+            </div>
+        </div>
+    </div>    
+</div>
+<br></br>
+{% endfor %}
+
+{% endblock %}
+
+
+
