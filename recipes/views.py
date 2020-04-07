@@ -37,6 +37,11 @@ class IndexView(generic.ListView):
             queryset = queryset.filter(Q(name__icontains=query_string) | Q(description__icontains=query_string))
 
         return queryset
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['top_ingredients'] = Ingredient.objects.annotate(recipes_count=Count('recipes')).order_by("-recipes_count")[:5]
+        return context
 
     
 class RecipeDetail(generic.DetailView):
