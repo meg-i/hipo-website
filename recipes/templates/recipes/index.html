@@ -6,7 +6,7 @@
 
 <div class="container-fluid">
     <div class="row">
-        <div class="col-md-7">
+        <div class="col-md-6">
             <div class="card">
                 <div class="card-header"> <h3>{{recipe.name}}</h3></div>
                 <div class="card-body">
@@ -20,8 +20,26 @@
                 </div>
             </div>
         </div>
-    </div>    
-</div>
+        {% if forloop.first %}
+            <div class="pull-right" style="position: absolute; right:100px;">
+                <div class="card" style="max-width: 18rem; border-radius: 25px; ">
+                    <div class="card-body">
+                        <h4 class="text-center"> Top Used Ingredients</h4><br>
+                        <ul>
+                            {% for ingredient in top_ingredients %}
+                            <li>
+                                {{ ingredient.name }} ({{ ingredient.recipes_count }})
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>    
+
 <br></br>
 {% endfor %}
 

@@ -1,14 +1,16 @@
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.shortcuts import render, redirect
 from django.views import generic
 from django.db.models import Count
 from django.db.models import Q
+from django.urls import reverse
 from .models import Recipe, Ingredient
 from .forms import RecipeForm
 import operator
 from functools import reduce
 
 
-class RecipeCreate(generic.CreateView):
+class RecipeCreate(LoginRequiredMixin, generic.CreateView):
     model = Recipe
     form_class = RecipeForm
     template_name = 'recipes/recipe_form.html'
@@ -70,3 +72,22 @@ class RecipeDetail(generic.DetailView):
     model = Recipe
     template_name = 'recipes/recipe_detail.html'
 
+class RecipeUpdateView(LoginRequiredMixin, UserPassesTestMixin, generic.UpdateView):
+    model = Recipe
+    form_class = RecipeForm
+    template_name = 'recipes/recipe_update.html'
+    
+
+    def form_valid(self, form):
+        form.instance.user = self.request.user
+        return super().form_valid(form)
+
+    def test_func(self):
+        recipe = self.get_object()
+        if self.request.user == recipe.user:
+            return True
+        else:
+            return False
+    
+    def get_success_url(self):
+        return reverse('recipes:detail', kwargs={'pk': self.object.pk,})

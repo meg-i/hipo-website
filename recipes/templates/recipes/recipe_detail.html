@@ -4,8 +4,12 @@
 {% block body %}
 
 <div class="col-sm-5 col-md-6">
-
-    <h2> {{recipe.name}} </h2>
+    
+    <h2> {{recipe.name}} 
+        {% if recipe.user == user %}
+            <a href="{% url 'recipes:update' recipe.id %}" class="btn btn-outline-dark">Edit</a> 
+        {% endif %}
+    </h2>
     <h6>
         <i class="em em-female-cook" aria-role="presentation" aria-label="female-cook"></i>
         {{recipe.user}}&nbsp;
