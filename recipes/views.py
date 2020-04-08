@@ -4,6 +4,8 @@ from django.db.models import Count
 from django.db.models import Q
 from .models import Recipe, Ingredient
 from .forms import RecipeForm
+import operator
+from functools import reduce
 
 
 class RecipeCreate(generic.CreateView):
@@ -26,6 +28,7 @@ class RecipeCreate(generic.CreateView):
         return render(request, self.template_name, {'form': form})
 
 
+
 class IndexView(generic.ListView):
     template_name = 'recipes/index.html'
 
@@ -33,9 +36,28 @@ class IndexView(generic.ListView):
         queryset = Recipe.objects.all()
         query_string = self.request.GET.get('q')
 
-        if query_string is not None:
-            queryset = queryset.filter(Q(name__icontains=query_string) | Q(description__icontains=query_string))
+        ingredient_keywords_count = 0
+        ingredient_queryset =  queryset
 
+        if query_string is not None:
+            
+            for term in query_string.split():
+                ingredient_queryset = ingredient_queryset.filter(Q(ingredients__name__in=[term.strip()]))
+                if ingredient_queryset.exists():
+                    ingredient_keywords_count += 1
+
+            if ingredient_keywords_count > 1:
+                queryset = ingredient_queryset
+            else:               
+                lookups = reduce(operator.or_, (  
+                            Q(name__icontains=term.strip()) |
+                            Q(description__icontains=term.strip()) |
+                            Q(ingredients__name__icontains=term.strip()) for term in query_string.split()
+                            )
+                        )
+                
+                queryset = queryset.filter(lookups).distinct()
+            
         return queryset
     
     def get_context_data(self, **kwargs):
