@@ -1,0 +1,11 @@
+{% extends 'recipes/base.html' %}
+{% block title %}Log in again{% endblock %}
+{% block register_active %}active{% endblock %}
+
+{% block body%}
+
+<h3>
+    Missed us? <a href="{% url 'users:login' %}">Click here</a> to log in again.
+</h3>
+
+{% endblock %}
