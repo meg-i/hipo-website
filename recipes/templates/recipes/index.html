@@ -14,7 +14,7 @@
                     <br> </br>
                     <p class="card-text">{{ recipe.description }}</p> 
                     <p class="card-text">
-                        <h6 class="text-muted"> {{ recipe.date_created|date:"F/d/Y" }} , by {{ recipe.user }} </h6>
+                        <h6 class="text-muted"> {{ recipe.date_created|date:"F/d/Y" }} | by {{ recipe.user }} |  {{ recipe.like_count }} like{{ recipe.like_count|pluralize }}</h6>
                     </p>
                     <a href="{% url 'recipes:detail' recipe.id %}" class="stretched-link">More...</a>
                 </div>
@@ -42,7 +42,34 @@
 
 <br></br>
 {% endfor %}
+<div class="row d-flex justify-content-center">
+    <div class="pagination">
+        <span class="step-links">
+            {% if page_obj.has_previous %}
+                <a href="?page=1">&laquo; first</a>
+                <a href="?page={{ page_obj.previous_page_number }}">previous</a>
+            {% endif %}
+            <h6 class="text-center">
+            <span class="current" >
+                Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.;
+            </span> 
+            </h6>
+            {% if page_obj.has_next %}
+                <a href="?page={{ page_obj.next_page_number }}" class="btn btn-outline-dark">next</a>
+                <a href="?page={{ page_obj.paginator.num_pages }}" class="btn btn-outline-dark">last &raquo;</a>
+            {% endif %}
+           
+        </span>
 
+    </div>
+   
+</div>
+
+<div class="text-center">
+    <small>
+        Total: {{ recipes_count}} recipes
+    </small>
+</div>
 {% endblock %}
 
 

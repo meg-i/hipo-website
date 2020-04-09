@@ -1,11 +1,11 @@
-{{ recipe.like_count }} 
+
 {% if request.user.is_authenticated %}
 <form action="{% url 'recipes:like' %}" method="post">
   {% csrf_token %}
   {% if was_liked %}
     <button type="submit" id="like" name="recipe_id" value="{{ recipe.id }}" class="btn btn-danger">Dislike</button>
   {% else %}
-    <button type="submit" id="like" name="recipe_id" value="{{ recipe.id }}" class="btn btn-primary">Like</button>
+    <button type="submit" id="like" name="recipe_id" value="{{ recipe.id }}" class="btn btn-primary">Like ({{ recipe.like_count }}) </button>
   {% endif %}
 </form>
 {% endif %}

@@ -33,12 +33,15 @@ class RecipeCreate(LoginRequiredMixin, generic.CreateView):
 
 
 class IndexView(generic.ListView):
+    model = Recipe
     template_name = 'recipes/index.html'
+    paginate_by = 3
 
     def get_queryset(self):
+        ordering = self.get_ordering()
         queryset = Recipe.objects.all()
         query_string = self.request.GET.get('q')
-
+        
         ingredient_keywords_count = 0
         ingredient_queryset =  queryset
 
@@ -60,11 +63,12 @@ class IndexView(generic.ListView):
                 
                 queryset = queryset.filter(lookups).distinct()
             
-        return queryset
+        return queryset.order_by('-date_created')
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['top_ingredients'] = Ingredient.objects.annotate(recipes_count=Count('recipes')).order_by("-recipes_count")[:5]
+        context['recipes_count'] = Recipe.objects.count()
         return context
 
     
@@ -89,10 +93,7 @@ class RecipeUpdateView(LoginRequiredMixin, UserPassesTestMixin, generic.UpdateVi
 
     def test_func(self):
         recipe = self.get_object()
-        if self.request.user == recipe.user:
-            return True
-        else:
-            return False
+        return self.request.user == recipe.user
     
     def get_success_url(self):
         return reverse('recipes:detail', kwargs={'pk': self.object.pk,})
