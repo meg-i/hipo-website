@@ -1,14 +1,15 @@
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.views import generic
 from django.db.models import Count
 from django.db.models import Q
 from django.urls import reverse
-from .models import Recipe, Ingredient
+from .models import Recipe, Ingredient, Like, Rating
 from .forms import RecipeForm
 import operator
 from functools import reduce
-
+from django.template.loader import render_to_string
+from django.http import JsonResponse
 
 class RecipeCreate(LoginRequiredMixin, generic.CreateView):
     model = Recipe
@@ -42,7 +43,6 @@ class IndexView(generic.ListView):
         ingredient_queryset =  queryset
 
         if query_string is not None:
-            
             for term in query_string.split():
                 ingredient_queryset = ingredient_queryset.filter(Q(ingredients__name__in=[term.strip()]))
                 if ingredient_queryset.exists():
@@ -72,12 +72,17 @@ class RecipeDetail(generic.DetailView):
     model = Recipe
     template_name = 'recipes/recipe_detail.html'
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['was_liked'] = Like.objects.filter(recipe=self.object, user=self.request.user)
+        return context
+
+
 class RecipeUpdateView(LoginRequiredMixin, UserPassesTestMixin, generic.UpdateView):
     model = Recipe
     form_class = RecipeForm
     template_name = 'recipes/recipe_update.html'
     
-
     def form_valid(self, form):
         form.instance.user = self.request.user
         return super().form_valid(form)
@@ -91,3 +96,24 @@ class RecipeUpdateView(LoginRequiredMixin, UserPassesTestMixin, generic.UpdateVi
     
     def get_success_url(self):
         return reverse('recipes:detail', kwargs={'pk': self.object.pk,})
+
+
+def like_recipe(request):
+    pk = request.POST.get('id')
+    recipe = get_object_or_404(Recipe, pk=pk)
+    user = request.user
+    like, created = Like.objects.get_or_create(recipe=recipe, user=user)
+
+    if not created:
+        like.delete()
+
+    context = {
+        'recipe': recipe,
+        'was_liked': created
+    }
+    if request.is_ajax():
+        html = render_to_string('recipes/like_template.html', context, request=request)
+        return JsonResponse({'form': html})
+
+
+

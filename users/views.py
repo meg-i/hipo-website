@@ -16,7 +16,6 @@ class UserFormView(View):
         form = self.form_class(request.POST)
 
         if form.is_valid():
-
             user = form.save(commit=False)
             username = form.cleaned_data['username']
             password = form.cleaned_data['password']
@@ -26,9 +25,7 @@ class UserFormView(View):
             user = authenticate(username=username, password=password)
 
             if user is not None:
-
                 if user.is_active:
-
                     login(request, user)
                     return redirect('recipes:index')
 

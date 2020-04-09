@@ -2,6 +2,27 @@
 {% block title %}Recipe Detail{% endblock %}
 
 {% block body %}
+<script>
+
+    $(document).on('click', '#like', function(event){
+              event.preventDefault();
+              var pk = $(this).attr('value');
+              $.ajax({
+                type: 'POST',
+                url: "{% url 'recipes:like' %}",
+                data: {'id':pk, 'csrfmiddlewaretoken': '{{ csrf_token }}'},
+                dataType: 'json',
+                success: function(response){
+                  $('#like-template').html(response['form'])
+                  console.log($('#like-template').html(response['form']));
+                },
+                error: function(rs, e){
+                  console.log(rs.responseText);
+                },
+              });
+            });
+  
+  </script>
 
 <div class="col-sm-5 col-md-6">
     
@@ -18,9 +39,11 @@
         <i class="em em-clock1" aria-role="presentation" aria-label="clock1"></i>
         {{ recipe.date_created|date:"F/d/Y" }}
     </h6>
-
     <div class="col-md-5" style="padding-left: 0"> <img src="{{ recipe.image.url }}" class="card-img-top"></div>
-    <br>
+    
+    <div id="like-template">
+        {% include 'recipes/like_template.html' %}
+    </div>
     <h4> Ingredients </h4>
     <ul>
         {% for ingredient in recipe.ingredients.all %}

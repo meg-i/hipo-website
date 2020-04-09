@@ -9,7 +9,6 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
     <link href="https://emoji-css.afeld.me/emoji.css" rel="stylesheet">
-
 </head>
 <body>
 
@@ -28,24 +27,23 @@
       <form action="{% url 'recipes:index' %}" class="form-inline my-2 my-lg-0" method="get">
         <input name="q" class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
         <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
-      </form>
-      
+      </form>      
       <ul class="navbar-nav mr-right">
         {% if user.is_authenticated %}
         <li class="nav-item">
           <a class="nav-link" href="{% url 'users:logout' %}">
-            <span class="glyphicon glyphicon-off" aria-hidden="true"></span>&nbsp; Logout ({{user.username}})
-            
+            <span class="glyphicon glyphicon-off" aria-hidden="true"></span>&nbsp; Logout ({{user.username}})         
           </a>
         </li>
         {% endif %}
-      </ul>
-      
+      </ul>    
     </div>
   </nav>
   <br>
-    
+
 {% block body %}
 {% endblock %}
+
+
 </body>
 </html>
