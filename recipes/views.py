@@ -11,6 +11,7 @@ from functools import reduce
 from django.template.loader import render_to_string
 from django.http import JsonResponse
 
+
 class RecipeCreate(LoginRequiredMixin, generic.CreateView):
     model = Recipe
     form_class = RecipeForm
@@ -29,7 +30,6 @@ class RecipeCreate(LoginRequiredMixin, generic.CreateView):
             form.save_m2m()
             return redirect('recipes:index')
         return render(request, self.template_name, {'form': form})
-
 
 
 class IndexView(generic.ListView):
@@ -117,4 +117,24 @@ def like_recipe(request):
         return JsonResponse({'form': html})
 
 
+def rate_recipe(request):
+    pk = request.POST.get('id')
+    rate = request.POST.get('rate')
+    recipe = get_object_or_404(Recipe, pk=pk)
+    user = request.user
+    rating, created = Rating.objects.get_or_create(recipe=recipe, user=user, defaults={'rate':rate})
 
+    if not created:
+        rating.rate = rate
+        Rating.objects.filter(recipe=recipe, user=user).update(rate=rate)
+    
+    # import pdb;pdb.set_trace()
+    context = {
+        'recipe': recipe,
+        'was_rated': created,
+        'rate': rate,
+    }
+    if request.is_ajax():
+        html = render_to_string('recipes/rate_template.html', context, request=request)
+        return JsonResponse({'form': html})
+    

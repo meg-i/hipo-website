@@ -2,7 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.utils import timezone
 from django.core.validators import MaxValueValidator, MinValueValidator
-
+from django.db.models import Avg
 
 class Ingredient(models.Model):
     
@@ -35,7 +35,15 @@ class Recipe(models.Model):
     def like_count(self):
         return self.likes.count()
 
+    @property
+    def ratings_count(self):
+        return self.ratings.count()
 
+    @property
+    def ratings_avg(self):
+        return self.ratings.aggregate(Avg('rate'))['rate__avg'] or 0.0
+        
+    
 class Like(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="likes")
     recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE, related_name="likes")
@@ -51,3 +59,7 @@ class Rating(models.Model):
 
     class Meta:
         unique_together = ("user", "recipe")
+
+    def __str__(self):
+        return "{rate} to {recipename}".format(rate=self.rate, recipename=self.recipe.name) 
+    

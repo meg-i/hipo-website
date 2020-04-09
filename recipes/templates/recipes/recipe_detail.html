@@ -21,6 +21,26 @@
                 },
               });
             });
+    
+    $(document).on('click', '#rate', function(event){
+        event.preventDefault();
+        var pk = $(this).attr('value');
+        var rate = parseInt($("#ratings option:selected").val())
+        console.log(rate);
+        $.ajax({
+        type: 'POST',
+        url: "{% url 'recipes:rate' %}",
+        data: {'id':pk, 'csrfmiddlewaretoken': '{{ csrf_token }}', 'rate': rate},
+        dataType: 'json',
+        success: function(response){
+            $('#rate-template').html(response['form'])
+            console.log($('#rate-template').html(response['form']));
+        },
+        error: function(rs, e){
+            console.log(rs.responseText);
+        },
+        });
+    });
   
   </script>
 
@@ -55,6 +75,9 @@
     <p>
         {{recipe.description}}
     </p>
+    <div id="rate-template">
+        {% include 'recipes/rate_template.html' %}
+    </div>
 </div>
 
 {% endblock %}

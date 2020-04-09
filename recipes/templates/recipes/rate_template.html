@@ -1,0 +1,14 @@
+{% if user.is_authenticated %}
+
+<form action="{% url 'recipes:rate' %}" method="POST"> 
+        {% csrf_token %}      
+        <select id="ratings">
+            <option>1</option>
+            <option>2</option>
+            <option>3</option>
+            <option>4</option>
+            <option>5</option>
+        </select>
+        <button id="rate" value="{{ recipe.id }}" type="button" class="btn btn-primary">Rate</button>
+</form>
+{% endif %}
