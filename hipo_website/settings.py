@@ -130,3 +130,5 @@ CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
 LOGIN_REDIRECT_URL = 'recipes:index'
 LOGIN_URL = 'users:login'
+
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
